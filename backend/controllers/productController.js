@@ -1,5 +1,6 @@
 const Product = require("../models/productModel");
 const mongoose = require("mongoose");
+const cloudinary = require('../config/cloudinary')
 
 const addProduct = async (req, res) => {
   try {
@@ -14,13 +15,31 @@ const addProduct = async (req, res) => {
       bestseller,
     } = req.body;
 
-    const image1 = req.files.image1?.[0].filename || "";
-    const image2 = req.files.image2?.[0].filename || "";
-    const image3 = req.files.image3?.[0].filename || "";
-    const image4 = req.files.image4?.[0].filename || "";
 
-    console.log(req.files);
-    const images = [image1, image2, image3, image4].filter(Boolean);
+    const imageFiles = [
+  req.files.image1?.[0],
+  req.files.image2?.[0],
+  req.files.image3?.[0],
+  req.files.image4?.[0],
+].filter(Boolean);
+
+const images = [];
+
+for (const file of imageFiles) {
+  const result = await cloudinary.uploader.upload(file.path, {
+    folder: "	E-commerce",
+  });
+
+  images.push(result.secure_url);
+}
+
+    // const image1 = req.files.image1?.[0].filename || "";
+    // const image2 = req.files.image2?.[0].filename || "";
+    // const image3 = req.files.image3?.[0].filename || "";
+    // const image4 = req.files.image4?.[0].filename || "";
+
+    // console.log(req.files);
+    // const images = [image1, image2, image3, image4].filter(Boolean);
 
     const product = new Product({
       name,

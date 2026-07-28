@@ -72,7 +72,7 @@ const ListProduct = () => {
                 <tr key={product._id} className=" hover:bg-gray-50">
                   <td className="px-4 py-3">
                     <img
-                      src={`http://localhost:5001/uploads/images/${product.image[0]}`}
+                      src={product.image[0]}
                       alt={product.name}
                       className="w-16 h-16 object-cover rounded"
                     />
