@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { addProduct } from "../services/axiosInstance";
-import upload_area from "../assets/Upload_area.png";
+import upload_area from "../assets/upload_area.png";
 import { toast } from "react-toastify"
 
 const AddProduct = () => {
