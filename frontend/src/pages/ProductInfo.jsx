@@ -55,7 +55,7 @@ const ProductInfo = () => {
         <div>
           {/* Main Image */}
           <img
-            src={`http://localhost:5001/uploads/images/${image}`}
+            src={image?.url}
             alt={singleProduct.name}
             className="w-full size-96 object-cover rounded-lg border"
           />
