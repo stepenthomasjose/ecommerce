@@ -1,7 +1,7 @@
 const Product = require("../models/productModel");
 const mongoose = require("mongoose");
 const cloudinary = require('../config/cloudinary')
-
+const fs = require("fs");
 const addProduct = async (req, res) => {
   try {
     const {
@@ -15,45 +15,54 @@ const addProduct = async (req, res) => {
       bestseller,
     } = req.body;
 
-
     const imageFiles = [
-  req.files.image1?.[0],
-  req.files.image2?.[0],
-  req.files.image3?.[0],
-  req.files.image4?.[0],
-].filter(Boolean);
+      req.files?.image1?.[0],
+      req.files?.image2?.[0],
+      req.files?.image3?.[0],
+      req.files?.image4?.[0],
+    ].filter(Boolean);
 
-const images = [];
+    if (imageFiles.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Please upload at least one image",
+      });
+    }
 
-for (const file of imageFiles) {
-  const result = await cloudinary.uploader.upload(file.path);
+    const images = [];
 
-  images.push(result.secure_url);
-}
+    for (const file of imageFiles) {
+      const result = await cloudinary.uploader.upload(file.path, {
+        folder: "XY-STORE/products",
+      });
 
-   
+     
+      images.push({
+  url: result.secure_url,
+  public_id: result.public_id,
+});
+fs.unlinkSync(file.path);
+    }
 
-    const product = new Product({
+    const product = await Product.create({
       name,
       description,
       price,
       category,
       subCategory,
       sizes: JSON.parse(sizes),
-      stock,
-      bestseller: bestseller === "true" ? true : false,
+      stock: Number(stock),
+      bestseller: bestseller === "true",
       image: images,
     });
 
-    await product.save();
-
-    res.json({
+    res.status(201).json({
       success: true,
-      message: "Product Added",
+      message: "Product added successfully",
       product,
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
 
     res.status(500).json({
       success: false,
@@ -197,38 +206,52 @@ const updateProduct = async (req,res)=>{
  }
 }
 
+const deleteProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
 
-const deleteProduct = async(req,res)=>{
-  try{
-    const {id} = req.params;
-
-    if(!mongoose.Types.ObjectId.isValid(id)){
+    if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         success: false,
         message: "Invalid Product ID",
-      })
+      });
     }
-    const product = await Product.findByIdAndDelete(id)
 
-    if(!product){
+    const product = await Product.findById(id);
+
+    if (!product) {
       return res.status(404).json({
-        success:false,
-        message:"product not found",
-      })
+        success: false,
+        message: "Product not found",
+      });
     }
+
+    // Delete images from Cloudinary
+    for (const imageUrl of product.image) {
+      const publicId = imageUrl
+        .split("/")
+        .slice(-2)
+        .join("/")
+        .split(".")[0];
+
+      await cloudinary.uploader.destroy(publicId);
+    }
+
+    await Product.findByIdAndDelete(id);
 
     res.status(200).json({
-      success:true,
-      message:"product deleted successfully",
-      product,
-    })
-  }catch(error){
-     res.status(500).json({
+      success: true,
+      message: "Product deleted successfully",
+    });
+
+  } catch (error) {
+    res.status(500).json({
       success: false,
       message: error.message,
     });
   }
-}
+};
+
 
 const getLatestProduct = async (req,res)=>{
   try{
