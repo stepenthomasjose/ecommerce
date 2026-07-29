@@ -22,7 +22,7 @@ const handleAddToCart = () => {
       <div className="relative">
         <Link to={`/product/${product._id}`}>
           <img
-            src={product.image[0]}
+            src={product.image[0]?.url}
             alt={product.name}
             className="w-full h-64 object-cover hover:scale-105 transition duration-300"
           />

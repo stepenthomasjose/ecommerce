@@ -64,8 +64,8 @@ const ProductInfo = () => {
           <div className="flex gap-3 mt-4">
             {singleProduct.image?.map((img) => (
               <img
-                key={img}
-                src={`http://localhost:5001/uploads/images/${img}`}
+                key={img.fileId}
+                src={img.url}
                 alt={singleProduct.name}
                 onClick={() => setImage(img)}
                 className={`w-20 h-20 rounded-lg object-cover cursor-pointer border-2 ${

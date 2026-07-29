@@ -48,7 +48,7 @@ const Cart = () => {
               <div className="flex items-center gap-5">
 
                 <img
-                  src={`http://localhost:5001/uploads/images/${item.image[0]}`}
+                  src={item.image[0]?.url}
                   alt={item.name}
                   className="w-28 h-28 object-cover rounded"
                 />
