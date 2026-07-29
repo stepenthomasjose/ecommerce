@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const cloudinary = require('../config/cloudinary')
 const fs = require("fs");
 const addProduct = async (req, res) => {
+ 
   try {
     const {
       name,
@@ -32,10 +33,11 @@ const addProduct = async (req, res) => {
     const images = [];
 
     for (const file of imageFiles) {
-      const result = await cloudinary.uploader.upload(file.path, {
-        folder: "XY-STORE/products",
-      });
-
+   
+       const result = await cloudinary.uploader.upload(file.path, {
+         folder: "XY-STORE/products",
+     });
+  
      
       images.push({
   url: result.secure_url,
