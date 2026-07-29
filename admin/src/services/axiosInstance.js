@@ -6,7 +6,7 @@ const API = axios.create({
 
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
-  console.log(token);
+
   
 
   if (token) {
@@ -24,9 +24,7 @@ export const adminLogin = (data) =>
 export const addProduct = (formData) =>
   API.post("/products/add", formData);
 
-// get Product
-// export const getProducts = () =>
-//   API.get("/products/listproducts");
+
 export const getProducts = (page = 1, limit = 8) =>
   API.get(`/products/listproducts?page=${page}&limit=${limit}`);
 
